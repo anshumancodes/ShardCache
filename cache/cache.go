@@ -20,8 +20,11 @@ func New(numShards int) *Cache {
 func (c *Cache) Set(key, value string) {
 	shard := c.GetShard(key)
 	shard.mu.Lock()
+	defer shard.mu.Unlock()
 	shard.data[key] = value
-	shard.mu.Unlock()
+	// handles evictions while setting the value , because lock is held
+	HandleEviction(shard, shard.evictions)
+
 }
 func (c *Cache) Get(key string) (string, bool) {
 
