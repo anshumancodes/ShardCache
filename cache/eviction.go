@@ -23,11 +23,16 @@ func NewEviction(key string) *Eviction {
 }
 
 func HandleEviction(shard *Shard, evictions []*Eviction) {
-	for _, eviction := range evictions {
-		if eviction.IsExpired() {
-			// delete from the shard's data map only if the eviction is expired
-			delete(shard.data, eviction.key)
-		}
+	for {
+		// check if the oldest eviction is expired
+		oldest := evictions[0]
 
+		// if not expired, break the loop because ofc newer ones are not expired yet
+		if !oldest.IsExpired() {
+			break
+		}
+		// if the oldest eviction is expired, delete it and move to the next one
+		delete(shard.data, oldest.key)
+		evictions = evictions[1:]
 	}
 }
