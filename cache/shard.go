@@ -7,6 +7,7 @@ import (
 
 type Shard struct {
 	data map[string]string // shard data
+	evictions []*Eviction
 	mu   sync.RWMutex      // lock for the shard
 }
 
