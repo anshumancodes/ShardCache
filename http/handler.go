@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"net/http"
-
 	"github.com/anshumancodes/ShardCache/cache"
 )
 
@@ -29,7 +28,7 @@ func (h *Handler) Get(w http.ResponseWriter, r http.Request) {
 	// read the key from the request path
 	key := r.PathValue("key")
 	// then using the handler access the cache and use cache.get to retrive value by using the key
-	value, ok := h.cache.get(key)
+	value, ok := h.cache.Get(key)
 
 	// returning 404
 	if !ok {
@@ -67,7 +66,7 @@ func (h *Handler) Set(w http.ResponseWriter, r http.Request) {
 	}
 
 	// set the value in the cache using cache package's set method
-	h.cache.set(key, body.Value)
+	h.cache.Set(key, body.Value)
 
 	w.Header().Set("Content-Type", "application/json")
 
