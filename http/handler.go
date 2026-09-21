@@ -3,8 +3,21 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+
 	"github.com/anshumancodes/ShardCache/cache"
 )
+
+type Response struct {
+	Data    any    `json:"data"`
+	Message string `json:"message"`
+}
+
+func HelloFrom(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	response := &Response{Message: "http server is running sucessfully!"}
+	json.NewEncoder(w).Encode(response)
+}
 
 // using this basically we can access the cache from the handler and manage it
 type Handler struct {
@@ -12,7 +25,7 @@ type Handler struct {
 }
 
 // this is a constructor function for the Handler struct
-func newHandler(c *cache.Cache) *Handler {
+func NewHandler(c *cache.Cache) *Handler {
 	return &Handler{
 		cache: c,
 	}
@@ -24,7 +37,7 @@ func newHandler(c *cache.Cache) *Handler {
 // if the key is not found, return a 404 error
 // if the key is found, return the value
 
-func (h *Handler) Get(w http.ResponseWriter, r http.Request) {
+func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	// read the key from the request path
 	key := r.PathValue("key")
 	// then using the handler access the cache and use cache.get to retrive value by using the key
@@ -49,7 +62,7 @@ func (h *Handler) Get(w http.ResponseWriter, r http.Request) {
 // we will decode the value from request body
 // if error return a 400 error
 // if not a error , will use cache.set to set the value in the cache
-func (h *Handler) Set(w http.ResponseWriter, r http.Request) {
+func (h *Handler) Set(w http.ResponseWriter, r *http.Request) {
 	key := r.PathValue("key")
 
 	var body struct {
