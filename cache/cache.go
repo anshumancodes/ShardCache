@@ -1,5 +1,7 @@
 package cache
 
+import "time"
+
 type Cache struct {
 	shards []Shard // cache is made of shards (slice of shards)
 }
@@ -22,6 +24,16 @@ func (c *Cache) Set(key, value string) {
 	shard.mu.Lock()
 	defer shard.mu.Unlock()
 	shard.data[key] = value
+	// for shards eviction queue if key already exists in the queue then pick it and update its creation time
+	for _, eviction := range shard.evictions {
+		if eviction.key == key {
+			eviction.creationTime = time.Now()
+			HandleEviction(shard, shard.evictions)
+			return
+		}
+	}
+	// if the key does not exist in the eviction queue, add it
+	shard.evictions = append(shard.evictions, NewEviction(key))
 	// handles evictions while setting the value , because lock is held
 	HandleEviction(shard, shard.evictions)
 
