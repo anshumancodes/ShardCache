@@ -41,6 +41,8 @@ Release the lock.
 - If it has exceeded the TTL, remove it from both the queue and cache.
 - Keep checking the next oldest entry until the oldest one hasn't expired.
 - Eviction happens during writes because the cache lock is already acquired.
+- for Handling overwriting an existing key , i will pick the new value and update key's value and timestamp in the cache.
+- to do that 
 
 
 ### Flow
